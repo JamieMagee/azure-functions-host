@@ -14,5 +14,6 @@ resources:
 variables:
   - template: ci/variables/cfs.yml@eng
 
+  # change to test trigger
 extends:
   template: ci/merge-mirror.yml@eng
