@@ -2,13 +2,14 @@ trigger:
   branches:
     include:
     - release/*
+    - jviau/test-mirror
 
 resources:
   repositories:
   - repository: eng
     type: git
     name: engineering
-    ref: refs/heads/jviau/fix-stages
+    ref: refs/heads/jviau/merge-mirror-abort
 
 variables:
   - template: ci/variables/cfs.yml@eng
