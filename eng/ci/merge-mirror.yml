@@ -14,6 +14,6 @@ resources:
 variables:
   - template: ci/variables/cfs.yml@eng
 
-# change to test trigger
+# force a conflict!
 extends:
   template: ci/merge-mirror.yml@eng
