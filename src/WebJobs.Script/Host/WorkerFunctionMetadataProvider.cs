@@ -75,7 +75,7 @@ namespace Microsoft.Azure.WebJobs.Script
                 // forceRefresh will be false when bundle is not used (dotnet and dotnet-isolated).
                 if (!_environment.IsPlaceholderModeEnabled() && forceRefresh && !_scriptOptions.CurrentValue.IsFileSystemReadOnly)
                 {
-                    _channelManager.ShutdownChannelsAsync().GetAwaiter().GetResult();
+                    await _channelManager.ShutdownChannelsAsync();
                 }
 
                 var channels = _channelManager.GetChannels(_workerRuntime);
@@ -108,6 +108,7 @@ namespace Microsoft.Azure.WebJobs.Script
                     throw new InvalidOperationException($"No initialized language worker channel found for runtime: {_workerRuntime}.");
                 }
 
+                List<Exception> errors = null;
                 foreach (string workerId in channels.Keys.ToList())
                 {
                     if (channels.TryGetValue(workerId, out TaskCompletionSource<IRpcWorkerChannel> languageWorkerChannelTask))
@@ -130,7 +131,7 @@ namespace Microsoft.Azure.WebJobs.Script
                             }
 
                             _functions = functions.ToImmutableArray();
-                            _logger.FunctionsReturnedByProvider(_functions.IsDefault ? 0 : _functions.Count(), _metadataProviderName);
+                            _logger.FunctionsReturnedByProvider(_functions.Length, _metadataProviderName);
 
                             // Validate if the app has functions in legacy format and add in logs to inform about the mixed app
                             _ = Task.Delay(TimeSpan.FromMinutes(1)).ContinueWith(t => ValidateFunctionAppFormat(_scriptOptions.CurrentValue.ScriptPath, _logger, _environment));
@@ -141,9 +142,13 @@ namespace Microsoft.Azure.WebJobs.Script
                         {
                             _logger.LogWarning(ex, "Removing errored webhost language worker channel for runtime: {workerRuntime} workerId:{workerId}", _workerRuntime, workerId);
                             await _channelManager.ShutdownChannelIfExistsAsync(_workerRuntime, workerId, ex);
+                            errors ??= [];
+                            errors.Add(ex);
                         }
                     }
                 }
+
+                ExceptionExtensions.ThrowIfErrorsPresent(errors, "Errors getting function metadata from workers.");
             }
 
             return new FunctionMetadataResult(useDefaultMetadataIndexing: false, _functions);
