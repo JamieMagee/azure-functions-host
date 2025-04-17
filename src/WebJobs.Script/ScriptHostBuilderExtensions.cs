@@ -142,7 +142,14 @@ namespace Microsoft.Azure.WebJobs.Script
                 var bundleManager = new ExtensionBundleManager(extensionBundleOptions, SystemEnvironment.Instance, loggerFactory, configOption);
                 var metadataServiceManager = applicationOptions.RootServiceProvider.GetService<IFunctionMetadataManager>();
 
-                var locator = new ScriptStartupTypeLocator(applicationOptions.ScriptPath, loggerFactory.CreateLogger<ScriptStartupTypeLocator>(), bundleManager, metadataServiceManager, metricsLogger, extensionRequirementOptions);
+                var locator = new ScriptStartupTypeLocator(
+                    applicationOptions.ScriptPath,
+                    loggerFactory.CreateLogger<ScriptStartupTypeLocator>(),
+                    bundleManager,
+                    metadataServiceManager,
+                    metricsLogger,
+                    SystemEnvironment.Instance,
+                    extensionRequirementOptions);
 
                 // The locator (and thus the bundle manager) need to be created now in order to configure app configuration.
                 // Store them so they do not need to be re-created later when configuring services.
