@@ -20,7 +20,7 @@ jobs:
     inputs:
       command: test
       testRunTitle: Unit Tests
-      arguments: -v n
+      arguments: -v n --blame
       projects: |
         **\ExtensionsMetadataGeneratorTests.csproj
         **\WebJobs.Script.Tests.csproj

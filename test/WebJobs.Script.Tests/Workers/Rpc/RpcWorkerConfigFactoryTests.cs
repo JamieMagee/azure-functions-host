@@ -217,13 +217,13 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.Workers.Rpc
         [InlineData(false, true, true, 4, 8, "00:00:05")]
         public void GetWorkerProcessCount_Tests(bool defaultWorkerConfig, bool setProcessCountToNumberOfCpuCores, bool setWorkerCountInEnv, int minProcessCount, int maxProcessCount, string processStartupInterval)
         {
-            JObject processCount = new JObject();
+            JObject processCount = new();
             processCount["ProcessCount"] = minProcessCount;
             processCount["MaxProcessCount"] = maxProcessCount;
             processCount["ProcessStartupInterval"] = processStartupInterval;
             processCount["SetProcessCountToNumberOfCpuCores"] = setProcessCountToNumberOfCpuCores;
 
-            JObject workerConfig = new JObject();
+            JObject workerConfig = new();
             if (!defaultWorkerConfig)
             {
                 workerConfig[WorkerConstants.ProcessCount] = processCount;
@@ -234,10 +234,10 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.Workers.Rpc
                 _testEnvironment.SetEnvironmentVariable(RpcWorkerConstants.FunctionsWorkerProcessCountSettingName, "7");
             }
 
-            var config = new ConfigurationBuilder().Build();
-            var testLogger = new TestLogger("test");
+            IConfiguration config = new ConfigurationBuilder().Build();
+            TestLogger testLogger = new("test");
 
-            RpcWorkerConfigFactory rpcWorkerConfigFactory = new RpcWorkerConfigFactory(config, testLogger, _testSysRuntimeInfo, _testEnvironment, new TestMetricsLogger(), _testWorkerProfileManager);
+            RpcWorkerConfigFactory rpcWorkerConfigFactory = new(config, testLogger, _testSysRuntimeInfo, _testEnvironment, new TestMetricsLogger(), _testWorkerProfileManager);
             var result = rpcWorkerConfigFactory.GetWorkerProcessCount(workerConfig);
 
             if (defaultWorkerConfig)
