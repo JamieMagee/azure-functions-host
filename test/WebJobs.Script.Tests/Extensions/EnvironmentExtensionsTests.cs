@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Azure.WebJobs.Script.Description;
 using Microsoft.Azure.WebJobs.Script.Workers.Rpc;
 using Microsoft.WebJobs.Script.Tests;
 using Xunit;
@@ -537,6 +538,21 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.Extensions
         {
             TestEnvironment environment = new();
             Assert.Equal(expected, environment.IsInProc(value));
+        }
+
+        [Theory]
+        [InlineData(FunctionGroups.ValidationWorker, true)]
+        [InlineData("function:http", false)]
+        [InlineData(null, false)]
+        public void IsInValidationMode_ReturnsExpectedResult(string functionGroup, bool expected)
+        {
+            IEnvironment env = new TestEnvironment();
+            if (!string.IsNullOrEmpty(functionGroup))
+            {
+                env.SetEnvironmentVariable(EnvironmentSettingNames.FunctionsTargetGroup, functionGroup);
+            }
+
+            Assert.Equal(expected, env.IsInValidationMode());
         }
     }
 }
