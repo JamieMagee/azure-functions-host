@@ -6,3 +6,5 @@
 - Memory allocation optimizations in `ScriptStartupTypeLocator.GetExtensionsStartupTypesAsync` (#11012)
 - Fix invocation timeout when incoming request contains "x-ms-invocation-id" header (#10980)
 - Throw exception instead of timing out when worker channel exits before initializing gRPC (#10937)
+- Warn if .azurefunctions folder does not exist (#10967)
+- Memory allocation & CPU optimizations in `GrpcMessageExtensionUtilities.ConvertFromHttpMessageToExpando` (#11054)
