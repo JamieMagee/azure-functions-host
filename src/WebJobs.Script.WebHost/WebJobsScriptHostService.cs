@@ -340,10 +340,25 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
             {
                 currentCancellationToken.ThrowIfCancellationRequested();
 
-                // if we were in an error state retain that,
-                // otherwise move to default
-                if (State != ScriptHostState.Error)
+                // the last startup failed, so use the JobHostStartupMode to determine
+                // whether we think this is a transient error or not
+                if (State == ScriptHostState.HandlingStartupError)
                 {
+                    if (startupMode == JobHostStartupMode.Normal)
+                    {
+                        // We're attempting to recover from a potentially transient error
+                        State = ScriptHostState.Default;
+                    }
+                    else
+                    {
+                        // We don't expect to recover from this error, so set the Error state.
+                        State = ScriptHostState.Error;
+                    }
+                }
+                else if (State != ScriptHostState.Error)
+                {
+                    // if we were in an error state retain that,
+                    // otherwise move to default
                     State = ScriptHostState.Default;
                 }
 
@@ -442,7 +457,7 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
                 if (isActiveHost)
                 {
                     LastError = exc;
-                    State = ScriptHostState.Error;
+                    State = ScriptHostState.HandlingStartupError;
                     logger.ErrorOccurredDuringStartupOperation(activeOperation.Id, exc);
                 }
                 else
