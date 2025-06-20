@@ -22,3 +22,4 @@
 - Update Java Worker Version to [2.19.2](https://github.com/Azure/azure-functions-java-worker/releases/tag/2.19.2)
 - Make serialization case insensitive (#11123)
 - Adding activity sources for Durable and WebJobs (Kafka and RabbitMQ) (#11137)
+- Fix startup deadlock on transient exceptions (#11142)
